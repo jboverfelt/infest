@@ -1,9 +1,11 @@
 # infest
 
-Provides an API and email notifications for the Baltimore City Recent Food Establishment Closures page 
+Provides an API for the Baltimore City Recent Food Establishment Closures page 
 [here](http://health.baltimorecity.gov/environmental-health/recent-food-establishment-closures)
 
 The application scrapes data from the page periodically and exposes that information in a queryable REST api.
+
+As of early 2017, this particular data is not exposed on the Open Baltimore Portal
 
 ## using
 
