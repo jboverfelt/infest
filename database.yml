@@ -1,0 +1,11 @@
+development:
+  dialect: "sqlite3"
+  database: "./development.sqlite"
+
+integration:
+  dialect: "sqlite3"
+  database: "./int.sqlite"
+
+production:
+  dialect: "postgres"
+  url: {{env "DATABASE_URL"}}

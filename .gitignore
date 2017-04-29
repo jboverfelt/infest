@@ -1,2 +1,5 @@
 *.swp
 infest
+*.sqlite
+.vscode
+debug.test
