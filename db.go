@@ -12,20 +12,17 @@ func insertIntoDb(closures []models.Closure, db *pop.Connection) error {
 		err := db.Transaction(func(tx *pop.Connection) error {
 			cur := model
 			var found models.Closure
-			ok, err := tx.Where("name = ?", cur.Name).Where("closureDate = ?", cur.ClosureDate).Exists(&found)
 
+			err := tx.Where("name = ?", cur.Name).Where("closureDate = ?", cur.ClosureDate).First(&found)
+
+			// if the record is not found then insert
 			if err != nil {
-				return err
-			}
-
-			// if the id is not found then insert
-			if !ok {
 				err = tx.Save(&cur)
 				if err != nil {
 					log.Printf("Failed to save new closure %v\n", cur)
 				}
 			} else {
-				// id is found, update the reopen date and comments
+				// old record is found, update the reopen date and comments
 				found.ReopenDate = cur.ReopenDate
 				found.ReopenComments = cur.ReopenComments
 				err = tx.Save(&found)

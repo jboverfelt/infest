@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"net/url"
+	"strings"
+	"time"
 
 	"github.com/jboverfelt/infest/models"
 	"github.com/markbates/pop"
@@ -68,10 +71,15 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func All(e *Env, w http.ResponseWriter, r *http.Request) error {
+func all(e *Env, w http.ResponseWriter, r *http.Request) error {
 	var closures []models.Closure
+	params := r.URL.Query()
 
-	err := e.DB.Order("closureDate desc").PaginateFromParams(r.URL.Query()).All(&closures)
+	baseQuery := e.DB.PaginateFromParams(params)
+
+	addQueryParams(baseQuery, params)
+
+	err := baseQuery.All(&closures)
 
 	if err != nil {
 		return err
@@ -86,4 +94,62 @@ func All(e *Env, w http.ResponseWriter, r *http.Request) error {
 	}
 
 	return nil
+}
+
+func addQueryParams(query *pop.Query, params url.Values) {
+	supportedParams := map[string]string{
+		"sort":      params.Get("sort"),
+		"name":      params.Get("name"),
+		"reason":    params.Get("reason"),
+		"startDate": params.Get("startDate"),
+		"endDate":   params.Get("endDate"),
+	}
+
+	if supportedParams["sort"] != "" {
+		addSort(query, supportedParams["sort"])
+	}
+
+	if supportedParams["name"] != "" {
+		query.Where("name = ?", supportedParams["name"])
+	}
+
+	if supportedParams["reason"] != "" {
+		query.Where("reason LIKE '%' || ? || '%'", supportedParams["reason"])
+	}
+
+	if supportedParams["startDate"] != "" {
+		tmpTime, err := time.Parse(closureTimeFmt, supportedParams["startDate"])
+
+		if err == nil {
+			query.Where("closureDate >= ?", tmpTime)
+		}
+	}
+
+	if supportedParams["endDate"] != "" {
+		tmpTime, err := time.Parse(closureTimeFmt, supportedParams["endDate"])
+
+		if err == nil {
+			query.Where("closureDate <= ?", tmpTime)
+		}
+	}
+}
+
+func addSort(query *pop.Query, sortVal string) {
+	supportedSortFields := map[string]bool{
+		"name":           true,
+		"address":        true,
+		"reason":         true,
+		"closureDate":    true,
+		"reopenDate":     true,
+		"reopenComments": true,
+	}
+	parts := strings.Split(sortVal, ".")
+
+	if len(parts) == 2 {
+		if strings.ToLower(parts[1]) == "asc" || strings.ToLower(parts[1]) == "desc" {
+			if _, ok := supportedSortFields[parts[0]]; ok {
+				query.Order(strings.Join(parts, " "))
+			}
+		}
+	}
 }

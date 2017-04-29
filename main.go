@@ -14,6 +14,7 @@ import (
 type props struct {
 	ClosuresURL string
 	Port        string
+	Schedule    string
 	GoEnv       string
 }
 
@@ -41,7 +42,7 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	r.Handle("/", NewHandler(env, All))
+	r.Handle("/", NewHandler(env, all)).Methods("GET")
 
 	http.ListenAndServe(":"+p.Port, r)
 }
@@ -51,6 +52,7 @@ func fillFromEnv() *props {
 		ClosuresURL: os.Getenv("CLOSURES_URL"),
 		Port:        os.Getenv("PORT"),
 		GoEnv:       os.Getenv("GO_ENV"),
+		Schedule:    os.Getenv("CLOSURES_SCHEDULE"),
 	}
 
 	if p.ClosuresURL == "" {
@@ -66,13 +68,18 @@ func fillFromEnv() *props {
 		p.GoEnv = "development"
 	}
 
+	if p.Schedule == "" {
+		log.Printf("Schedule not defined, using @every 1m")
+		p.Schedule = "@every 1m"
+	}
+
 	return p
 }
 
 func startCron(db *pop.Connection, p *props) {
 	c := cron.New()
 
-	err := c.AddFunc("@every 1m", createCronFunc(db, p))
+	err := c.AddFunc(p.Schedule, createCronFunc(db, p))
 
 	checkFatalErr(err)
 
