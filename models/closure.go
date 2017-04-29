@@ -18,9 +18,9 @@ type Closure struct {
 	Name           string       `json:"name" db:"name"`
 	Address        string       `json:"address" db:"address"`
 	Reason         string       `json:"reason" db:"reason"`
-	ClosureDate    time.Time    `json:"closureDate" db:"closureDate"`
-	ReopenDate     nulls.Time   `json:"reopenDate" db:"reopenDate"`
-	ReopenComments nulls.String `json:"reopenComments" db:"reopenComments"`
+	ClosureDate    time.Time    `json:"closureDate" db:"closuredate"`
+	ReopenDate     nulls.Time   `json:"reopenDate" db:"reopendate"`
+	ReopenComments nulls.String `json:"reopenComments" db:"reopencomments"`
 }
 
 // String is not required by pop and may be deleted

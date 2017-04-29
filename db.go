@@ -13,7 +13,7 @@ func insertIntoDb(closures []models.Closure, db *pop.Connection) error {
 			cur := model
 			var found models.Closure
 
-			err := tx.Where("name = ?", cur.Name).Where("closureDate = ?", cur.ClosureDate).First(&found)
+			err := tx.Where("name = ?", cur.Name).Where("closuredate = ?", cur.ClosureDate).First(&found)
 
 			// if the record is not found then insert
 			if err != nil {

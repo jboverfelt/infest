@@ -121,7 +121,7 @@ func addQueryParams(query *pop.Query, params url.Values) {
 		tmpTime, err := time.Parse(closureTimeFmt, supportedParams["startDate"])
 
 		if err == nil {
-			query.Where("closureDate >= ?", tmpTime)
+			query.Where("closuredate >= ?", tmpTime)
 		}
 	}
 
@@ -129,7 +129,7 @@ func addQueryParams(query *pop.Query, params url.Values) {
 		tmpTime, err := time.Parse(closureTimeFmt, supportedParams["endDate"])
 
 		if err == nil {
-			query.Where("closureDate <= ?", tmpTime)
+			query.Where("closuredate <= ?", tmpTime)
 		}
 	}
 }
@@ -139,9 +139,9 @@ func addSort(query *pop.Query, sortVal string) {
 		"name":           true,
 		"address":        true,
 		"reason":         true,
-		"closureDate":    true,
-		"reopenDate":     true,
-		"reopenComments": true,
+		"closuredate":    true,
+		"reopendate":     true,
+		"reopencomments": true,
 	}
 	parts := strings.Split(sortVal, ".")
 
