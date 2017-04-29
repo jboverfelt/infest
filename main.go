@@ -31,6 +31,9 @@ func main() {
 	db, err := pop.Connect(p.GoEnv)
 	checkFatalErr(err)
 
+	err = db.MigrateUp("migrations")
+	checkFatalErr(err)
+
 	startCron(db, p)
 
 	env := &Env{
