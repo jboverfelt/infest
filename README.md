@@ -1,6 +1,6 @@
 # infest
 
-Provides an API for the Baltimore City Recent Food Establishment Closures page 
+Provides an API for the Baltimore City Recent Food Establishment Closures page
 [here](http://health.baltimorecity.gov/environmental-health/recent-food-establishment-closures)
 
 The application scrapes data from the page periodically and exposes that information in a queryable REST api.
@@ -31,3 +31,7 @@ The below environment variables must be set for the app to run. Defaults are giv
 * `CLOSURES_SCHEDULE` - a schedule compatible with the [robfig/cron](https://github.com/robfig/cron) library. Default is every minute.
 * `PORT` - the port that the application will run on
 * `GO_ENV` - Either "development" or "production" depending on the environment. Default is development if unset.
+
+## dependencies
+
+The full list is in Godeps/Godeps.json. In development and test the app uses sqlite to keep it lightweight. In production, postgres is used.
