@@ -35,7 +35,13 @@ func main() {
 	err = db.MigrateUp("migrations")
 	checkFatalErr(err)
 
-	startCron(db, p)
+	loadFunc := createLoadFunc(db, p)
+
+	// run load process on startup to make sure we're up
+	// to date when heroku wakes the app up
+	loadFunc()
+
+	startCron(p, loadFunc)
 
 	env := &Env{
 		DB: db,
@@ -76,17 +82,17 @@ func fillFromEnv() *props {
 	return p
 }
 
-func startCron(db *pop.Connection, p *props) {
+func startCron(p *props, cronFunc func()) {
 	c := cron.New()
 
-	err := c.AddFunc(p.Schedule, createCronFunc(db, p))
+	err := c.AddFunc(p.Schedule, cronFunc)
 
 	checkFatalErr(err)
 
 	c.Start()
 }
 
-func createCronFunc(db *pop.Connection, p *props) func() {
+func createLoadFunc(db *pop.Connection, p *props) func() {
 	return func() {
 		log.Printf("Starting load function")
 		closures, err := fetchClosures(p.ClosuresURL)
