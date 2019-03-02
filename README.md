@@ -34,4 +34,4 @@ The below environment variables must be set for the app to run. Defaults are giv
 
 ## dependencies
 
-The full list is in Godeps/Godeps.json. In development and test the app uses sqlite to keep it lightweight. In production, postgres is used.
+The full list is in go.mod. In development and test the app uses sqlite to keep it lightweight. In production, postgres is used.
